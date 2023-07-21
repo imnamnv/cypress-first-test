@@ -1,7 +1,7 @@
 // help vs code use cy keyword ???
 /// <reference types="cypress" />
 
-const { CtrCompleter } = require("ng2-completer");
+// cy.constains : Only the first matched element will be returned. get base on text
 
 //or context
 describe("Our first test", () => {
@@ -203,7 +203,7 @@ describe("Our first test", () => {
   });
 
   // select tag has select function. only work on select tag, we can select by value
-  it.only("Lists and dropdowns", () => {
+  it("Lists and dropdowns", () => {
     cy.visit("/");
 
     // 1
@@ -245,6 +245,100 @@ describe("Our first test", () => {
         }
       });
     });
+  });
+
+  it("Web Table", () => {
+    cy.visit("/");
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    // 1
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .then((tableRow) => {
+        cy.wrap(tableRow).find(".nb-edit").click();
+        cy.wrap(tableRow).find('[placeholder="Age"]').clear().type("25");
+        cy.wrap(tableRow).find(".nb-checkmark").click();
+
+        cy.wrap(tableRow).find("td").eq(6).should("contain", "25");
+      });
+
+    // 2
+    cy.get("thead").find(".nb-plus").click();
+
+    cy.get("thead")
+      .find("tr")
+      .eq(2)
+      .then((tableRow) => {
+        cy.wrap(tableRow).find('[placeholder="First Name"]').type("Nam");
+        cy.wrap(tableRow).find('[placeholder="Last Name"]').type("Nguyen");
+
+        cy.wrap(tableRow).find(".nb-checkmark").click();
+      });
+
+    cy.get("tbody")
+      .find("tr")
+      .first()
+      .then((tableRow) => {
+        cy.wrap(tableRow).find("td").eq(2).should("contain", "Nam");
+        cy.wrap(tableRow).find("td").eq(3).should("contain", "Nguyen");
+      });
+
+    // 3
+    const ages = [20, 30, 40, 200];
+    cy.wrap(ages).each((age) => {
+      cy.get('thead [placeholder="Age"]').clear().type(age);
+      cy.wait(300);
+
+      cy.get("tbody")
+        .find("tr")
+        .each((tableRow) => {
+          if (age === 200) {
+            cy.wrap(tableRow).find("td").should("contain", "No data found");
+          } else {
+            cy.wrap(tableRow).find("td").eq(6).should("contain", age);
+          }
+        });
+    });
+  });
+
+  it("second test", () => {
+    cy.visit("/");
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Tooltip").click();
+
+    cy.contains("nb-card", "Colored Tooltips").contains("Default").click();
+    cy.get("nb-tooltip").should("contain", "This is a tooltip");
+  });
+
+  it.only("second test", () => {
+    cy.visit("/");
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    // 1
+    // cy.get("tbody tr").first().find(".nb-trash").click();
+    // cy.on("window:confirm", (confirm) => {
+    //   expect(confirm).to.equal("Are you sure you want to delete?");
+    // });
+
+    // 2
+    const stub = cy.stub();
+    cy.on("window:confirm", stub);
+    cy.get("tbody tr")
+      .first()
+      .find(".nb-trash")
+      .click()
+      .then(() => {
+        expect(stub.getCall(0)).to.be.calledWith(
+          "Are you sure you want to delete?"
+        );
+      });
+
+    //dont want to confirm
+    // 3
+    // cy.get("tbody tr").first().find(".nb-trash").click();
+    // cy.on("window:confirm", () => false);
   });
 });
 
