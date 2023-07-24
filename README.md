@@ -5,3 +5,8 @@ This is modified and more lightweight version of original application to practic
 The original repo is here: https://github.com/akveo/ngx-admin
 
 npm install --force
+
+Run:
+npm start - with node 18
+
+npx cypress open - run cypress UI

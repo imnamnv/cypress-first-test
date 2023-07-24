@@ -162,6 +162,7 @@ describe("Our first test", () => {
         cy.wrap(input)
           .invoke("prop", "value") // prop is a function
           .should("contain", dateAssert);
+        cy.wrap(input).should("have.value", dateAssert);
       });
   });
 
@@ -302,7 +303,7 @@ describe("Our first test", () => {
     });
   });
 
-  it("second test", () => {
+  it("test hover behavior", () => {
     cy.visit("/");
     cy.contains("Modal & Overlays").click();
     cy.contains("Tooltip").click();
@@ -311,7 +312,7 @@ describe("Our first test", () => {
     cy.get("nb-tooltip").should("contain", "This is a tooltip");
   });
 
-  it.only("second test", () => {
+  it.only("test alert box", () => {
     cy.visit("/");
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
